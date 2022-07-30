@@ -1,7 +1,11 @@
-import { useEffect } from "react";
+
 import { useRouter } from "next/router";
-import TrackingForm from "../components/TrackingForm";
-import Traking from "../components/traking";
+
+
+
+import Help from "../components/Helpers/Help";
+import ShareForm from "../components/Forms/ShareForm";
+import NothingBarcode from "../components/TrackingStates/NothingBarcode";
 
 export default function Home() {
   const router = useRouter();
@@ -12,8 +16,10 @@ export default function Home() {
 
   return (
     <>
-      <TrackingForm onSubmit={handleSubmit} />
-      {/* <Traking /> */}
+     <ShareForm onSubmit={handleSubmit}/>
+      <Help />
+
+   <NothingBarcode/>
     </>
   );
 }

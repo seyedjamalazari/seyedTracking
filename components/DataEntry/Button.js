@@ -2,7 +2,7 @@ import { Button as AntdButton } from "antd";
 import { Controller } from "react-hook-form";
 
 const Button = ({ control, label, name, ...props }) => {
-  console.log("htmlType", props.htmlType);
+  // console.log("htmlType", props.htmlType);
   return (
     <>
       <label>{label}</label>

@@ -7,7 +7,8 @@ import "antd/dist/antd.css";
 import "../styles/globals.css";
 import { Layout } from "antd";
 import { Content, Footer, Header } from "antd/lib/layout/layout";
-import Navigation from "./Navigation";
+import Navigation from "../components/Layout/Navigation";
+
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -16,7 +17,7 @@ function MyApp({ Component, pageProps }) {
       <ThemeProvider theme={theme}>
         <Layout>
           <Header>
-            <Navigation />
+          <Navigation/>
           </Header>
           <Content>
             <Component {...pageProps} />

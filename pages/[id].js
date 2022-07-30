@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 
-import TrackingForm from "../components/TrackingForm";
-import TrackingResult from "../components/TrackingResult";
-import TrakingMail from "../components/TrakingMail";
-import ResultBarcodeComponente from "../components/ResultBarcodeComponente";
+import ShareForm from "../components/Forms/ShareForm";
 
+import ResultBarcodeComponente from "../components/TrackingStates/ResultBarcode";
+import LoadingBarcodeComponent from "../components/TrackingStates/LoadingBarcode";
+import ErrorBarcodeComponent from "../components/TrackingStates/ErrorBarcode";
+import NothingBarcodeComponent from "../components/TrackingStates/NothingBarcode";
+import HelpComponent from "../components/Helpers/Help";
 
 export default function Home() {
   const [tracking, setTracking] = useState({
@@ -15,63 +17,76 @@ export default function Home() {
     // error: undefined,
   });
 
-  const [data, setData] = useState();
-  const [error, setError] = useState();
   const router = useRouter();
   const { id } = router.query;
 
+  const loadTracking = (barcode) => {
+    if (!barcode) return false;
+
+    const url = `http://192.168.100.184:3031/api/v1/customer/trackings/public/${barcode.toUpperCase()}`;
+
+    setTracking({ ...tracking, status: "loading" });
+
+    axios
+      .get(url)
+      .then(({ data }) => {
+        setTracking({ data, status: "success" });
+      })
+      .catch((error) => {
+        setTracking({ error, status: "error" });
+      });
+  };
+
   useEffect(() => {
-    // console.log("useEffect", id);
-    if (id) {
-      const url = `http://192.168.100.184:3031/api/v1/customer/trackings/public/${id.toUpperCase()}`;
-
-      setTracking({ ...tracking, status: "loading" });
-
-      axios
-        .get(url)
-        .then(({ data }) => {
-          console.log("data", data);
-          setTracking({ data, status: "success" });
-
-          setData(data);
-        })
-        .catch((error) => {
-          setTracking({ error, status: "error" });
-
-          setError(error);
-          console.log("error in ", error);
-        });
-    }
+    loadTracking(id);
   }, [id]);
 
   const handleSubmit = ({ barcode }) => {
     router.push(`/${barcode}`);
   };
 
-  // console.log("error in ", error);
-  // console.log("tracking ", tracking);
+  const { data, error, status } = tracking;
+
+  // const { barcodes } = data;
+
+  const handleChange = (barcode) => {
+    // console.log("barcode selected", barcode);
+    // if (barcodes) {
+    loadTracking(barcode);
+    // }
+  };
 
   return (
     <>
-      <TrackingForm onSubmit={handleSubmit} />
+      <ShareForm onSubmit={handleSubmit} />
 
-      {data && <TrackingResult data={data} />}
-      {error && error.message}     
-      {/* <Traking response={response} />  */}
       {(() => {
-        switch (tracking.status) {
+        switch (status) {
           case "init":
-            return "noting";
+            return <NothingBarcodeComponent />;
 
           case "loading":
-            return "loading";
+            return <LoadingBarcodeComponent />;
           case "success":
-            return <ResultBarcodeComponente/> ;
+            return (
+              <> <HelpComponent />
+                <ResultBarcodeComponente data={data} onChange={handleChange} />{" "}
+               
+              </>
+            );
           // return <TrakingMail/>
           case "error":
-            return  <h2> {error && error.message}</h2>;
+            return (
+              <><HelpComponent />
+                <ErrorBarcodeComponent>{error}</ErrorBarcodeComponent>
+            
+              </>
+            );
+
           default:
-            return "noting";
+
+          
+            return <NothingBarcodeComponent />;
         }
       })()}
     </>

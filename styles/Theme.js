@@ -1,5 +1,5 @@
 export default {
   colors: {
-    title: "red",
+    // title: "red",
   },
 };
